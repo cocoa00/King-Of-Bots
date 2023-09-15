@@ -35,13 +35,28 @@ export default {
         let username = ref('');
         let password = ref('');
         let error_message = ref('');
+
+        const jwt_token = localStorage.getItem("jwt_token");
+        if (jwt_token){
+            store.commit("updateToken", jwt_token);
+            store.dispatch("getInfo", {
+                success(){
+                    router.push({name: "home"});
+                },
+                error(){
+
+                }
+            })
+        }
+
+
         const login = () => {
             error_message.value = '';
             store.dispatch('login', {
                 username: username.value,
                 password: password.value,
                 success(){
-                    store.dispatch('getinfo', {
+                    store.dispatch('getInfo', {
                         success() {
                             router.push({name: 'home'});
                             console.log(store.state.user);
@@ -67,7 +82,7 @@ export default {
 </script>
 
 <style scope>
-div.error_message {
-    color: red;
-}
+    div.error_message {
+        color: red;
+    }
 </style>
