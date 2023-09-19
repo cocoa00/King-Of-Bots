@@ -55,8 +55,8 @@ public class UpdateServiceImpl implements UpdateService {
             return map;
         }
 
-        if (content.length() > 100){
-            map.put("error_message", "代码长度不能大于100");
+        if (content.length() > 10000){
+            map.put("error_message", "代码长度不能大于10000");
             return map;
         }
 
