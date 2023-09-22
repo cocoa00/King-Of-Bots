@@ -12,7 +12,7 @@
                         <input v-model="password" type="password" class="form-control" id="password" placeholder="请输入密码">
                     </div>
                     <div class="error_message"> {{ error_message }}</div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">登录</button>
                 </form>
             </div>
 
@@ -59,7 +59,7 @@ export default {
                     store.dispatch('getInfo', {
                         success() {
                             router.push({name: 'home'});
-                            console.log(store.state.user);
+                            // console.log(store.state.user);
                         }
                     });
                     

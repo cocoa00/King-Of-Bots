@@ -1,5 +1,6 @@
 const AC_GAME_OBJECTS = [];
 
+//全局刷新类
 export class AcGameObject {
     constructor() {
         AC_GAME_OBJECTS.push(this);
