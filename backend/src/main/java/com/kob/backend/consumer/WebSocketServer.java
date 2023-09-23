@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.utils.Game;
 import com.kob.backend.consumer.utils.JwtAuthentication;
+import com.kob.backend.mapper.RecordMapper;
 import com.kob.backend.mapper.UserMapper;
+import com.kob.backend.pojo.Record;
 import com.kob.backend.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,7 @@ public class WebSocketServer {
 
     //websocket不是单例模式，需要用该方法特殊注入对象
     private static UserMapper userMapper;
+    public static RecordMapper recordMapper;
     private Game game = null;
 
     @Autowired
@@ -36,6 +39,10 @@ public class WebSocketServer {
         WebSocketServer.userMapper = userMapper;
     }
 
+    @Autowired
+    public void setRecordMapper(RecordMapper recordMapper) {
+        WebSocketServer.recordMapper = recordMapper;
+    }
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         // 建立连接

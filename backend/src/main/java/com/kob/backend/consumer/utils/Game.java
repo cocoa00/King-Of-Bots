@@ -2,9 +2,12 @@ package com.kob.backend.consumer.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
+import com.kob.backend.pojo.Record;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -76,7 +79,7 @@ public class Game extends Thread{
             g[r][0] = g[r][this.cols - 1] = 1;
         }
         for (int c = 0; c < this.cols; c ++){
-            g[0][c] = g[this.rows - 1][c] = 0;
+            g[0][c] = g[this.rows - 1][c] = 1;
         }
         //创建随机障碍物
         Random random = new Random();
@@ -132,8 +135,41 @@ public class Game extends Thread{
         }
         return false;
     }
+    private boolean check_valid(List<Cell> cellsA, List<Cell> cellsB){
+        int n = cellsA.size();
+        Cell cell = cellsA.get(n - 1);
+        if (g[cell.x][cell.y] == 1) return false;
 
+        for (int i = 0; i < n - 1; i ++) {
+            if (cellsA.get(i).x == cell.x && cellsA.get(i).y == cell.y){
+                return false;
+            }
+        }
+
+        for (int i = 0; i < n - 1; i ++) {
+            if (cellsB.get(i).x == cell.x && cellsB.get(i).y == cell.y){
+                return false;
+            }
+        }
+        return true;
+    }
     private void judge() {  //判断两名玩家下一步是否合法
+        List<Cell> cellsA = playerA.getCells();
+        List<Cell> cellsB = playerB.getCells();
+
+        boolean validA = check_valid(cellsA, cellsB);
+        boolean validB = check_valid(cellsB, cellsA);
+        if (!validA || !validB){
+            status = "finished";
+
+            if (!validA && ! validB){
+                loser = "all";
+            } else if (!validA){
+                loser = "A";
+            } else {
+                loser = "B";
+            }
+        }
 
     }
     private void sendAllMessage(String message) {
@@ -154,6 +190,34 @@ public class Game extends Thread{
         }
 
     }
+    private String getMapString() {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < rows; i ++){
+            for (int j = 0; j < cols; j ++) {
+                res.append(g[i][j]);
+            }
+        }
+        return res.toString();
+    }
+
+    private void saveToDatabase(){
+        Record record = new Record(
+                null,
+                playerA.getId(),
+                playerA.getSx(),
+                playerA.getSy(),
+                playerB.getId(),
+                playerB.getSx(),
+                playerB.getSy(),
+                playerA.getStepsString(),
+                playerB.getStepsString(),
+                getMapString(),
+                loser,
+                new Date()
+        );
+//        System.out.println(record);
+        WebSocketServer.recordMapper.insert(record);
+    }
     private void sendResult() { //向两名client公布结果
         JSONObject resp = new JSONObject();
         resp.put("event", "result");
@@ -169,6 +233,7 @@ public class Game extends Thread{
                 if (status.equals("playing")) {
                     sendMove();
                 } else {
+                    saveToDatabase();
                     sendResult();
                     break;
                 }
@@ -186,6 +251,7 @@ public class Game extends Thread{
                 } finally {
                     lock.unlock();
                 }
+                saveToDatabase();
                 sendResult();
                 break;
 
