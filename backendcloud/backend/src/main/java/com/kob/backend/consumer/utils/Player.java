@@ -12,6 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Player {
     private Integer id;
+    private Integer botId;  //-1代表人工，否则表示用AI
+    private String botCode;
     private Integer sx;
     private Integer sy;
     private List<Integer> steps;
