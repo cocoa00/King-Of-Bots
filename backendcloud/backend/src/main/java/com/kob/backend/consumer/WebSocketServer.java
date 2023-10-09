@@ -31,7 +31,7 @@ public class WebSocketServer {
     private Session session = null;
 
     //websocket不是单例模式，需要用该方法特殊注入对象
-    private static UserMapper userMapper;
+    public static UserMapper userMapper;
     public static RecordMapper recordMapper;
     private static BotMapper botMapper;
     public static RestTemplate restTemplate;

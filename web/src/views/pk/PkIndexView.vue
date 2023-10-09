@@ -2,6 +2,8 @@
     <PlayGround v-if="$store.state.pk.status === 'playing'" />
     <MatchGround v-if="$store.state.pk.status === 'matching'" />
     <ResultBoard v-if="$store.state.pk.loser !== 'none'" />
+    <div class="user-color" v-if="$store.state.pk.status === 'playing' && $store.state.user.id == $store.state.pk.a_id">你在左下角</div>
+    <div class="user-color" v-if="$store.state.pk.status === 'playing' && $store.state.user.id == $store.state.pk.b_id">你在右上角</div>
 </template>
  
 <script>
@@ -21,6 +23,7 @@ export default {
         const socketUrl = `ws://127.0.0.1:3000/websocket/${store.state.user.token}/`;
         let socket = null;
         store.commit("updateLoser", "none");
+        store.commit("updateIsRecord", false);
         onMounted(() => {
             store.commit("updateOpponent", {
                 username: "我的对手",
@@ -82,5 +85,11 @@ export default {
 </script>
 
 <style scope>
-
+div.user-color{
+    text-align: center;
+    font-size: 4vh;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 0 10px black;
+}
 </style>
